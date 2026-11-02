@@ -25,6 +25,35 @@ def is_admin(user_id):
     return user_id == ADMIN_ID
 
 
+    elif data == "delete_chapter" and is_admin(q.from_user.id):
+        rows = db.execute(
+            "SELECT id, name FROM chapters"
+        ).fetchall()
+
+        if not rows:
+            await q.message.reply_text("لا توجد أبواب للحذف.")
+            return
+
+        buttons = [
+            [InlineKeyboardButton(name, callback_data=f"delchap_{cid}")]
+            for cid, name in rows
+        ]
+
+        await q.message.reply_text(
+            "🗑️ اختار الباب الذي تريد حذفه:",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    elif data.startswith("delchap_") and is_admin(q.from_user.id):
+        cid = int(data.split("_")[1])
+
+        db.execute("DELETE FROM videos WHERE chapter_id=?", (cid,))
+        db.execute("DELETE FROM chapters WHERE id=?", (cid,))
+        db.commit()
+
+        await q.edit_message_text("✅ تم حذف الباب وجميع الفيديوهات الموجودة بداخله.")
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     await show_subjects(update, context)
