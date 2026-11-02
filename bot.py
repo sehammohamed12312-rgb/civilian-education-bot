@@ -9,7 +9,7 @@ from telegram.ext import (
 TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = 8406743511
 
-db = sqlite3.connect("library.db", check_same_thread=False)
+db = sqlite3.connect("/data/library.db", check_same_thread=False)
 db.execute("""CREATE TABLE IF NOT EXISTS subjects (
     id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)""")
 db.execute("""CREATE TABLE IF NOT EXISTS chapters (
@@ -55,6 +55,7 @@ async def admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("➕ إضافة مادة", callback_data="add_subject")],
         [InlineKeyboardButton("➕ إضافة فصل", callback_data="add_chapter")],
         [InlineKeyboardButton("🎥 رفع فيديو", callback_data="add_video")],
+        [InlineKeyboardButton("🗑️ حذف باب", callback_data="delete_chapter")],
         [InlineKeyboardButton("📚 عرض المواد", callback_data="show_admin")]
     ]
     await update.message.reply_text(
